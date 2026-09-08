@@ -55,6 +55,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       }
     ] : []),
     { 
+      id: 'login' as AppView, 
+      label: 'Role Login Portals', 
+      icon: 'passkey',
+      badge: '3 ROLES'
+    },
+    { 
       id: 'merchant-portal' as AppView, 
       label: 'Buyer / Merchant Portal', 
       icon: 'shopping_basket',

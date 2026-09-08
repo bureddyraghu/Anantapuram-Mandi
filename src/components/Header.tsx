@@ -365,12 +365,25 @@ export const Header: React.FC<HeaderProps> = ({
                     onClick={(e) => {
                       e.stopPropagation();
                       setShowUserMenu(false);
+                      setIsMobileFarmerMode(false);
+                      setCurrentView('login');
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-xl text-[#1a1c1e] hover:bg-[#FAF8F5] flex items-center gap-2 transition-colors font-medium"
+                  >
+                    <span className="material-symbols-outlined text-sm text-[#983c0c]">passkey</span>
+                    <span>Role Login Screens (రోల్ స్క్రీన్లు)</span>
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowUserMenu(false);
                       onOpenLoginModal();
                     }}
                     className="w-full text-left px-3 py-2 rounded-xl text-[#1a1c1e] hover:bg-[#FAF8F5] flex items-center gap-2 transition-colors font-medium"
                   >
                     <span className="material-symbols-outlined text-sm text-emerald-700">switch_account</span>
-                    <span>Switch Role / Login Screen</span>
+                    <span>Switch Role / Login Popup</span>
                   </button>
 
                   {currentUser.role === 'admin' && (

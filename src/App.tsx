@@ -18,6 +18,7 @@ import { ContractSignModal } from './components/modals/ContractSignModal';
 import { CreateRFQModal } from './components/modals/CreateRFQModal';
 import { LoginModal } from './components/modals/LoginModal';
 import { UpdatePasswordModal } from './components/modals/UpdatePasswordModal';
+import { LoginView } from './views/LoginView';
 import { CONSIGNMENT_ITEMS, INITIAL_FARMER_RECORDS, INITIAL_MERCHANT_RECORDS } from './data/mockData';
 import { INITIAL_USER_ACCOUNTS } from './data/mockUsers';
 import { FarmerRecord, MerchantRecord } from './types';
@@ -50,6 +51,9 @@ export default function App() {
     }
     if (appParam === 'zones' || hash.includes('zones')) {
       return { view: 'network-and-zones' as AppView, isFarmer: false };
+    }
+    if (appParam === 'login' || hash.includes('login') || appParam === 'roles') {
+      return { view: 'login' as AppView, isFarmer: false };
     }
     return { view: 'dashboard' as AppView, isFarmer: false };
   };
@@ -153,8 +157,9 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    setIsLoginModalOpen(true);
-    showToast('Signed out of Mandi Corridor. Please select your role and enter credentials.');
+    setCurrentView('login');
+    setIsMobileFarmerMode(false);
+    showToast('Signed out of Mandi Corridor. Select your role to access your dedicated login screen.');
   };
 
   // Sync URL query params and hash when view or mode changes
@@ -183,6 +188,9 @@ export default function App() {
     } else if (currentView === 'network-and-zones') {
       url.searchParams.set('app', 'zones');
       url.hash = '#zones';
+    } else if (currentView === 'login') {
+      url.searchParams.set('app', 'login');
+      url.hash = '#login';
     } else {
       url.searchParams.set('app', 'mandi');
       url.hash = '#command-os';
@@ -376,6 +384,25 @@ export default function App() {
                 setCurrentView('dashboard');
               }}
               onShowToast={showToast}
+            />
+          ) : currentView === 'login' ? (
+            <LoginView
+              users={users}
+              onLoginSuccess={handleLoginSuccess}
+              onRequirePasswordChange={handleRequirePasswordChange}
+              initialRole={currentUser.role}
+              onBackToDashboard={() => {
+                if (currentUser.role === 'farmer') {
+                  setIsMobileFarmerMode(true);
+                  setCurrentView('farmer-listing');
+                } else if (currentUser.role === 'merchant') {
+                  setIsMobileFarmerMode(false);
+                  setCurrentView('merchant-portal');
+                } else {
+                  setIsMobileFarmerMode(false);
+                  setCurrentView('dashboard');
+                }
+              }}
             />
           ) : (
             <GenericSectionView

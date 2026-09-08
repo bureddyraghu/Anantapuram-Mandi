@@ -12,7 +12,8 @@ export type AppView =
   | 'logistics-and-cold-chain'
   | 'supply-demand-and-pricing'
   | 'ai-opportunity-engine'
-  | 'audit-and-settings';
+  | 'audit-and-settings'
+  | 'login';
 
 export interface BuyerRFQ {
   id: string;
