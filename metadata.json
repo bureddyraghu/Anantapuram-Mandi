@@ -1,0 +1,6 @@
+{
+  "name": "Anantapuram Mandi OS",
+  "description": "South India Mandi Operating System & Agro-Corridor Telemetry Command Center across AP, Karnataka, Tamil Nadu, Telangana, and Kerala.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
