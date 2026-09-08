@@ -260,6 +260,25 @@ export const MerchantPortalView: React.FC<MerchantPortalViewProps> = ({
             </div>
 
             <button
+              onClick={() => {
+                if (typeof window !== 'undefined' && navigator.clipboard) {
+                  const url = new URL(window.location.href);
+                  url.searchParams.set('app', 'merchant');
+                  url.hash = '#merchant';
+                  navigator.clipboard.writeText(url.toString());
+                  onShowToast('వ్యాపారి పోర్టల్ లింక్ కాపీ చేయబడింది! (Merchant/Buyer Portal URL copied)');
+                } else {
+                  onShowToast('Merchant URL: ' + window.location.href);
+                }
+              }}
+              className="px-3.5 py-2 rounded-xl bg-white border border-[#E6DED4] text-xs font-semibold text-[#56423b] hover:bg-[#FAF7F2] transition-colors flex items-center gap-1.5"
+              title="Copy direct link to Merchant/Buyer Portal"
+            >
+              <span className="material-symbols-outlined text-sm text-[#1A3026]">share</span>
+              <span>Share Portal</span>
+            </button>
+
+            <button
               onClick={onOpenCreateRFQ}
               className="px-4 py-2 rounded-xl bg-[#983c0c] hover:bg-[#7e2c00] text-white text-xs font-semibold shadow-sm transition-colors flex items-center gap-1.5"
             >

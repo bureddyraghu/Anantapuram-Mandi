@@ -1,20 +1,26 @@
 import React from 'react';
-import { AppView } from '../types';
+import { AppView, UserAccount } from '../types';
 
 interface SidebarProps {
   currentView: AppView;
   setCurrentView: (view: AppView) => void;
   isMobileFarmerMode: boolean;
   setIsMobileFarmerMode: (val: boolean) => void;
+  currentUser: UserAccount;
+  onOpenLoginModal?: () => void;
+  onLogout?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   currentView,
   setCurrentView,
   isMobileFarmerMode,
-  setIsMobileFarmerMode
+  setIsMobileFarmerMode,
+  currentUser,
+  onOpenLoginModal,
+  onLogout,
 }) => {
-  const navItems = [
+  const baseNavItems = [
     { 
       id: 'dashboard' as AppView, 
       label: 'Dashboard', 
@@ -39,6 +45,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: 'storefront',
       badge: '4.8k'
     },
+    ...(currentUser.role === 'admin' ? [
+      {
+        id: 'admin-users' as AppView,
+        label: 'Users & Privileges',
+        icon: 'manage_accounts',
+        badge: 'AUTH',
+        isPulse: true
+      }
+    ] : []),
     { 
       id: 'merchant-portal' as AppView, 
       label: 'Buyer / Merchant Portal', 
@@ -97,6 +112,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       isSpecialFarmer: true
     }
   ];
+
+  const navItems = baseNavItems;
 
   return (
     <aside className="w-64 bg-[#FAF7F2] border-r border-[#E6DED4] flex flex-col justify-between shrink-0 h-screen sticky top-0 overflow-y-auto">
@@ -188,30 +205,70 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
       </div>
 
-      {/* Bottom Status Card */}
-      <div className="p-4 border-t border-[#E6DED4] bg-white/50">
-        <div className="p-3 rounded-2xl bg-white border border-[#E6DED4] shadow-2xs space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-1.5 font-semibold text-[#1a1c1e]">
-              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-              <span>Mandi Grid Online</span>
+      {/* Bottom User Profile & Status Card */}
+      <div className="p-3.5 border-t border-[#E6DED4] bg-white/60 space-y-2.5">
+        {/* Active User Card */}
+        <div className="p-2.5 rounded-2xl bg-[#FAF8F5] border border-[#E6DED4] flex items-center justify-between">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0 ${
+              currentUser.role === 'admin' ? 'bg-[#983c0c]' :
+              currentUser.role === 'merchant' ? 'bg-[#1A3026]' :
+              'bg-[#2A5C3B]'
+            }`}>
+              {currentUser.name.slice(0, 2).toUpperCase()}
             </div>
-            <span className="font-mono text-[11px] font-bold text-[#476558]">128 / 128</span>
+            <div className="min-w-0">
+              <div className="font-bold text-xs text-[#1a1c1e] truncate">
+                {currentUser.name}
+              </div>
+              <div className="text-[10px] font-mono text-[#84726C] truncate">
+                {currentUser.phoneNumber}
+              </div>
+            </div>
           </div>
 
-          <div className="w-full bg-[#EDE7DD] h-1.5 rounded-full overflow-hidden">
-            <div className="bg-emerald-600 h-full w-full rounded-full"></div>
+          <div className="flex items-center gap-1 shrink-0">
+            {onOpenLoginModal && (
+              <button
+                onClick={onOpenLoginModal}
+                title="Switch Role / Login"
+                className="p-1 rounded-lg text-[#56423b] hover:bg-white hover:text-[#983c0c] transition-colors"
+              >
+                <span className="material-symbols-outlined text-base">switch_account</span>
+              </button>
+            )}
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                title="Logout"
+                className="p-1 rounded-lg text-[#56423b] hover:bg-red-50 hover:text-red-600 transition-colors"
+              >
+                <span className="material-symbols-outlined text-base">logout</span>
+              </button>
+            )}
           </div>
+        </div>
 
-          <div className="flex items-center justify-between text-[11px] text-[#6F6B64]">
-            <span>Latency</span>
-            <span className="font-mono font-medium text-[#1A3026]">18ms (Direct APMC)</span>
-          </div>
-
-          <div className="pt-1 border-t border-[#E6DED4]/60 text-[10px] text-[#8a7269] flex justify-between">
-            <span>T+0 RTGS Ready</span>
-            <span className="text-emerald-700 font-bold">100% Escrow</span>
-          </div>
+        {/* Role & Password indicator */}
+        <div className="flex items-center justify-between px-1 text-[10px]">
+          <span className={`px-2 py-0.5 rounded-full font-bold uppercase ${
+            currentUser.role === 'admin' ? 'bg-[#ffdbd0] text-[#983c0c]' :
+            currentUser.role === 'merchant' ? 'bg-emerald-100 text-emerald-900' :
+            'bg-amber-100 text-amber-950'
+          }`}>
+            Role: {currentUser.role}
+          </span>
+          {currentUser.mustChangePassword ? (
+            <span className="text-amber-700 font-bold flex items-center gap-0.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
+              <span>Must Update Pwd</span>
+            </span>
+          ) : (
+            <span className="text-emerald-700 font-semibold flex items-center gap-0.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span>Secure Pwd</span>
+            </span>
+          )}
         </div>
       </div>
     </aside>

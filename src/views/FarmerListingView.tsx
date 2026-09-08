@@ -70,6 +70,24 @@ export const FarmerListingView: React.FC<FarmerListingViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              if (typeof window !== 'undefined' && navigator.clipboard) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('app', 'farmer');
+                url.hash = '#farmer';
+                navigator.clipboard.writeText(url.toString());
+                onShowToast('రైతు యాప్ లింక్ కాపీ చేయబడింది! (Farmer App URL copied)');
+              } else {
+                onShowToast('రైతు యాప్ URL: ' + window.location.href);
+              }
+            }}
+            className="p-1.5 rounded-xl bg-[#FAF7F2] border border-[#E6DED4] hover:bg-[#EDE7DD] text-[#56423b] flex items-center gap-1 text-[11px] font-semibold transition-colors"
+            title="Copy Direct Link to Farmer App"
+          >
+            <span className="material-symbols-outlined text-sm">share</span>
+            <span className="hidden sm:inline">Share App</span>
+          </button>
           <span className="px-2.5 py-1 rounded-full bg-[#E5EBE7] text-[#1A3026] text-[11px] font-bold">
             తెలుగు / EN
           </span>
