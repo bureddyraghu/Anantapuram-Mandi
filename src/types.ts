@@ -3,6 +3,7 @@ export type AppView =
   | 'network-and-zones' 
   | 'procurement-orders-and-weighment' 
   | 'farmer-listing'
+  | 'merchant-portal'
   | 'farmers-and-fpos'
   | 'mandi-merchants'
   | 'produce-master'
@@ -11,6 +12,24 @@ export type AppView =
   | 'supply-demand-and-pricing'
   | 'ai-opportunity-engine'
   | 'audit-and-settings';
+
+export interface BuyerRFQ {
+  id: string;
+  rfqCode: string;
+  produceName: string;
+  teluguName?: string;
+  category: string;
+  volumeRequiredMT: number;
+  volumeLockedMT: number;
+  targetPriceMin: number;
+  targetPriceMax: number;
+  qualitySpecs: string;
+  deliveryLocation: string;
+  deliveryDate: string;
+  status: 'active' | 'partially_filled' | 'completed' | 'draft';
+  matchedLotsCount: number;
+  matchScore: number;
+}
 
 export interface ClusterNode {
   id: string;

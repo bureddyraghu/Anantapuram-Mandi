@@ -40,6 +40,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badge: '4.8k'
     },
     { 
+      id: 'merchant-portal' as AppView, 
+      label: 'Buyer / Merchant Portal', 
+      icon: 'shopping_basket',
+      badge: 'PRO',
+      isPulse: true
+    },
+    { 
       id: 'produce-master' as AppView, 
       label: 'Produce Master', 
       icon: 'grain',

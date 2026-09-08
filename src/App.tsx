@@ -7,10 +7,12 @@ import { ProcurementView } from './views/ProcurementView';
 import { FarmerListingView } from './views/FarmerListingView';
 import { NetworkZonesView } from './views/NetworkZonesView';
 import { GenericSectionView } from './views/GenericSectionView';
+import { MerchantPortalView } from './views/MerchantPortalView';
 import { PriceEquilibriumModal } from './components/modals/PriceEquilibriumModal';
 import { CreateZoneModal } from './components/modals/CreateZoneModal';
 import { ConsignmentTrackModal } from './components/modals/ConsignmentTrackModal';
 import { ContractSignModal } from './components/modals/ContractSignModal';
+import { CreateRFQModal } from './components/modals/CreateRFQModal';
 import { CONSIGNMENT_ITEMS } from './data/mockData';
 
 export default function App() {
@@ -22,6 +24,7 @@ export default function App() {
   const [isEquilibriumModalOpen, setIsEquilibriumModalOpen] = useState(false);
   const [isCreateZoneModalOpen, setIsCreateZoneModalOpen] = useState(false);
   const [isSignModalOpen, setIsSignModalOpen] = useState(false);
+  const [isCreateRFQModalOpen, setIsCreateRFQModalOpen] = useState(false);
   const [activeTrackingConsignment, setActiveTrackingConsignment] = useState<ConsignmentItem | null>(null);
 
   // Toast state
@@ -118,6 +121,17 @@ export default function App() {
               onOpenCreateZoneModal={() => setIsCreateZoneModalOpen(true)}
               onShowToast={showToast}
             />
+          ) : currentView === 'merchant-portal' ? (
+            <MerchantPortalView
+              onOpenCreateRFQ={() => setIsCreateRFQModalOpen(true)}
+              onOpenContractSign={() => setIsSignModalOpen(true)}
+              onOpenConsignmentModal={(item) => setActiveTrackingConsignment(item)}
+              onShowToast={showToast}
+              onSwitchToFarmer={() => {
+                setIsMobileFarmerMode(true);
+                setCurrentView('farmer-listing');
+              }}
+            />
           ) : currentView === 'farmer-listing' ? (
             <FarmerListingView
               onBackToOS={() => {
@@ -142,6 +156,14 @@ export default function App() {
       </div>
 
       {/* Interactive Modals */}
+      <CreateRFQModal
+        isOpen={isCreateRFQModalOpen}
+        onClose={() => setIsCreateRFQModalOpen(false)}
+        onRFQCreated={(rfq) => {
+          showToast(`RFQ ${rfq.rfqCode} broadcasted to 24,580 farmers across South India!`);
+        }}
+      />
+
       <PriceEquilibriumModal
         isOpen={isEquilibriumModalOpen}
         onClose={() => setIsEquilibriumModalOpen(false)}

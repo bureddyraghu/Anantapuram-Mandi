@@ -41,17 +41,17 @@ export const Header: React.FC<HeaderProps> = ({
         
         {/* Left: Mobile menu toggle / Zone Switcher */}
         <div className="flex items-center gap-3">
-          {/* View Mode Toggle Pill: Desktop Mandi OS vs Farmer App */}
+          {/* View Mode Toggle Pill: Desktop Mandi OS vs Merchant Portal vs Farmer App */}
           <div className="flex items-center bg-[#EDE7DD] p-1 rounded-full border border-[#DDC0B6]/50">
             <button
               onClick={() => {
                 setIsMobileFarmerMode(false);
-                if (currentView === 'farmer-listing') {
+                if (currentView === 'farmer-listing' || currentView === 'merchant-portal') {
                   setCurrentView('dashboard');
                 }
               }}
               className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                !isMobileFarmerMode 
+                !isMobileFarmerMode && currentView !== 'merchant-portal'
                   ? 'bg-[#983c0c] text-white shadow-sm' 
                   : 'text-[#56423b] hover:text-[#1a1c1e]'
               }`}
@@ -60,6 +60,23 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="hidden sm:inline">Mandi Command OS</span>
               <span className="sm:hidden">OS</span>
             </button>
+
+            <button
+              onClick={() => {
+                setIsMobileFarmerMode(false);
+                setCurrentView('merchant-portal');
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                !isMobileFarmerMode && currentView === 'merchant-portal'
+                  ? 'bg-[#1A3026] text-white shadow-sm' 
+                  : 'text-[#56423b] hover:text-[#1a1c1e]'
+              }`}
+            >
+              <span className="material-symbols-outlined text-sm">storefront</span>
+              <span className="font-semibold hidden sm:inline">Merchant / Buyer App</span>
+              <span className="font-semibold sm:hidden">Buyer</span>
+            </button>
+
             <button
               onClick={() => {
                 setIsMobileFarmerMode(true);
