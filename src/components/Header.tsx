@@ -90,8 +90,44 @@ export const Header: React.FC<HeaderProps> = ({
         
         {/* Left: Brand Identity or View Mode Switcher */}
         <div className="flex items-center gap-3">
-          {currentView === 'merchant-portal' ? (
-            /* Dedicated Merchant / Buyer App Header (No access to Dashboard) */
+          {currentView === 'farmer-listing' || isMobileFarmerMode || currentUser.role === 'farmer' ? (
+            /* Dedicated Farmer App Header (Strictly isolated to Farmer Portal) */
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-[#2A5C3B] text-white flex items-center justify-center shadow-xs border border-emerald-700/50">
+                <span className="material-symbols-outlined text-xl text-emerald-300">agriculture</span>
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="font-serif font-bold text-sm sm:text-base text-[#1a1c1e] leading-tight">
+                    రైతు యాప్ • Farmer Portal
+                  </h1>
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#c9ead9] text-[#022016] border border-[#adcebe]">
+                    APMC Direct Kisan
+                  </span>
+                </div>
+                <div className="text-[11px] text-[#6F6B64] hidden sm:block">
+                  రైతు సేవలు • 0% కమీషన్ • డిజిటల్ తూకం • T+0 నేరుగా బ్యాంక్ ఖాతాకు
+                </div>
+              </div>
+
+              {/* Admin-only escape hatch to return to Mandi Command OS */}
+              {currentUser.role === 'admin' && (
+                <button
+                  onClick={() => {
+                    setIsMobileFarmerMode(false);
+                    setCurrentView('dashboard');
+                  }}
+                  className="ml-2 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#E6DED4] text-xs font-semibold text-[#983c0c] hover:bg-[#FAF7F2] transition-colors shadow-2xs"
+                  title="Admin session: Return to Mandi Command OS"
+                >
+                  <span className="material-symbols-outlined text-sm">arrow_back</span>
+                  <span className="hidden md:inline">Exit to Mandi OS</span>
+                  <span className="md:hidden">Exit</span>
+                </button>
+              )}
+            </div>
+          ) : currentView === 'merchant-portal' || currentUser.role === 'merchant' ? (
+            /* Dedicated Merchant / Buyer App Header (Strictly isolated to Merchant Portal) */
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-[#1A3026] text-white flex items-center justify-center shadow-xs border border-emerald-700/50">
                 <span className="material-symbols-outlined text-xl text-emerald-400">storefront</span>
@@ -127,22 +163,20 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
           ) : (
-            /* View Mode Toggle Pill for Admin / OS Modes */
+            /* View Mode Toggle Pill for Admin / Command OS Modes ONLY */
             <div className="flex items-center bg-[#EDE7DD] p-1 rounded-full border border-[#DDC0B6]/50">
-              {currentUser.role !== 'merchant' && (
-                <button
-                  onClick={() => handleNavigate('os')}
-                  className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                    !isMobileFarmerMode && currentView !== 'merchant-portal' && currentView !== 'farmers-and-fpos' && currentView !== 'mandi-merchants' && currentView !== 'admin-users'
-                      ? 'bg-[#983c0c] text-white shadow-sm' 
-                      : 'text-[#56423b] hover:text-[#1a1c1e]'
-                  }`}
-                >
-                  <span className="material-symbols-outlined text-sm">desktop_windows</span>
-                  <span className="hidden sm:inline">Mandi Command OS</span>
-                  <span className="sm:hidden">OS</span>
-                </button>
-              )}
+              <button
+                onClick={() => handleNavigate('os')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                  !isMobileFarmerMode && currentView !== 'merchant-portal' && currentView !== 'farmers-and-fpos' && currentView !== 'mandi-merchants' && currentView !== 'admin-users'
+                    ? 'bg-[#983c0c] text-white shadow-sm' 
+                    : 'text-[#56423b] hover:text-[#1a1c1e]'
+                }`}
+              >
+                <span className="material-symbols-outlined text-sm">desktop_windows</span>
+                <span className="hidden sm:inline">Mandi Command OS</span>
+                <span className="sm:hidden">OS</span>
+              </button>
 
               <button
                 onClick={() => handleNavigate('merchant')}
@@ -157,19 +191,17 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="font-semibold sm:hidden">Buyer</span>
               </button>
 
-              {currentUser.role !== 'merchant' && (
-                <button
-                  onClick={() => handleNavigate('farmer')}
-                  className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                    isMobileFarmerMode 
-                      ? 'bg-[#476558] text-white shadow-sm' 
-                      : 'text-[#56423b] hover:text-[#1a1c1e]'
-                  }`}
-                >
-                  <span className="material-symbols-outlined text-sm">smartphone</span>
-                  <span className="font-semibold">రైతు యాప్ (Farmer)</span>
-                </button>
-              )}
+              <button
+                onClick={() => handleNavigate('farmer')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                  isMobileFarmerMode 
+                    ? 'bg-[#476558] text-white shadow-sm' 
+                    : 'text-[#56423b] hover:text-[#1a1c1e]'
+                }`}
+              >
+                <span className="material-symbols-outlined text-sm">smartphone</span>
+                <span className="font-semibold">రైతు యాప్ (Farmer)</span>
+              </button>
 
               {currentUser.role === 'admin' && (
                 <button
@@ -188,45 +220,47 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           )}
 
-          {/* Regional Zone Selector */}
-          <div className="relative hidden lg:block">
-            <button
-              onClick={() => setShowZoneDropdown(!showZoneDropdown)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#E6DED4] bg-white text-xs font-medium text-[#1a1c1e] hover:border-[#983c0c]/40 transition-colors shadow-2xs"
-            >
-              <span className="material-symbols-outlined text-[#983c0c] text-base">location_on</span>
-              <span className="max-w-[190px] truncate text-left font-semibold">{selectedZone}</span>
-              <span className="material-symbols-outlined text-xs text-[#6F6B64]">expand_more</span>
-            </button>
+          {/* Regional Zone Selector (Hidden in Farmer Mode) */}
+          {!isMobileFarmerMode && currentView !== 'farmer-listing' && currentUser.role !== 'farmer' && (
+            <div className="relative hidden lg:block">
+              <button
+                onClick={() => setShowZoneDropdown(!showZoneDropdown)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#E6DED4] bg-white text-xs font-medium text-[#1a1c1e] hover:border-[#983c0c]/40 transition-colors shadow-2xs"
+              >
+                <span className="material-symbols-outlined text-[#983c0c] text-base">location_on</span>
+                <span className="max-w-[190px] truncate text-left font-semibold">{selectedZone}</span>
+                <span className="material-symbols-outlined text-xs text-[#6F6B64]">expand_more</span>
+              </button>
 
-            {showZoneDropdown && (
-              <div className="absolute left-0 mt-2 w-72 rounded-xl bg-white border border-[#E6DED4] shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-1">
-                <div className="px-3 py-1 text-[11px] font-semibold text-[#6F6B64] uppercase tracking-wider">
-                  Select Agro-Corridor
+              {showZoneDropdown && (
+                <div className="absolute left-0 mt-2 w-72 rounded-xl bg-white border border-[#E6DED4] shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-1">
+                  <div className="px-3 py-1 text-[11px] font-semibold text-[#6F6B64] uppercase tracking-wider">
+                    Select Agro-Corridor
+                  </div>
+                  {zones.map((zone) => (
+                    <button
+                      key={zone.id}
+                      onClick={() => {
+                        setSelectedZone(zone.name);
+                        setShowZoneDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 text-xs hover:bg-[#FAF7F2] flex items-center justify-between ${
+                        selectedZone === zone.name ? 'bg-[#F7ECE5] text-[#983c0c] font-semibold' : 'text-[#1a1c1e]'
+                      }`}
+                    >
+                      <div>
+                        <div className="font-medium">{zone.name}</div>
+                        <div className="text-[11px] text-[#6F6B64]">{zone.state}</div>
+                      </div>
+                      {selectedZone === zone.name && (
+                        <span className="material-symbols-outlined text-sm text-[#983c0c]">check</span>
+                      )}
+                    </button>
+                  ))}
                 </div>
-                {zones.map((zone) => (
-                  <button
-                    key={zone.id}
-                    onClick={() => {
-                      setSelectedZone(zone.name);
-                      setShowZoneDropdown(false);
-                    }}
-                    className={`w-full text-left px-3 py-2 text-xs hover:bg-[#FAF7F2] flex items-center justify-between ${
-                      selectedZone === zone.name ? 'bg-[#F7ECE5] text-[#983c0c] font-semibold' : 'text-[#1a1c1e]'
-                    }`}
-                  >
-                    <div>
-                      <div className="font-medium">{zone.name}</div>
-                      <div className="text-[11px] text-[#6F6B64]">{zone.state}</div>
-                    </div>
-                    {selectedZone === zone.name && (
-                      <span className="material-symbols-outlined text-sm text-[#983c0c]">check</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Center: Live Real-Time Mandi Ticker */}
@@ -275,8 +309,12 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="font-semibold">AP-KA SYNC: 128 Mandis Live</span>
           </div>
 
-          {/* Quick Equilibrium Simulator Button (Hidden in Merchant Portal or for Merchants) */}
-          {currentView !== 'merchant-portal' && currentUser.role !== 'merchant' && (
+          {/* Quick Equilibrium Simulator Button (Hidden in Merchant Portal or Farmer App or for Merchants/Farmers) */}
+          {currentView !== 'merchant-portal' &&
+            currentUser.role !== 'merchant' &&
+            !isMobileFarmerMode &&
+            currentView !== 'farmer-listing' &&
+            currentUser.role !== 'farmer' && (
             <button
               onClick={onOpenEquilibriumModal}
               title="Open Price Equilibrium Simulator"
@@ -411,44 +449,47 @@ export const Header: React.FC<HeaderProps> = ({
                     <span>Update Password (పాస్‌వర్డ్ మార్చండి)</span>
                   </button>
 
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowUserMenu(false);
-                      setIsMobileFarmerMode(false);
-                      setCurrentView('login');
-                    }}
-                    className="w-full text-left px-3 py-2 rounded-xl text-[#1a1c1e] hover:bg-[#FAF8F5] flex items-center gap-2 transition-colors font-medium"
-                  >
-                    <span className="material-symbols-outlined text-sm text-[#983c0c]">passkey</span>
-                    <span>Role Login Screens (రోల్ స్క్రీన్లు)</span>
-                  </button>
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowUserMenu(false);
-                      onOpenLoginModal();
-                    }}
-                    className="w-full text-left px-3 py-2 rounded-xl text-[#1a1c1e] hover:bg-[#FAF8F5] flex items-center gap-2 transition-colors font-medium"
-                  >
-                    <span className="material-symbols-outlined text-sm text-emerald-700">switch_account</span>
-                    <span>Switch Role / Login Popup</span>
-                  </button>
-
+                  {/* Administrative Portal & Multi-Role Switching strictly restricted to Admin only */}
                   {currentUser.role === 'admin' && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowUserMenu(false);
-                        setIsMobileFarmerMode(false);
-                        setCurrentView('admin-users');
-                      }}
-                      className="w-full text-left px-3 py-2 rounded-xl text-[#983c0c] hover:bg-[#ffdbd0]/30 flex items-center gap-2 transition-colors font-bold"
-                    >
-                      <span className="material-symbols-outlined text-sm">manage_accounts</span>
-                      <span>Manage Users &amp; Privileges</span>
-                    </button>
+                    <>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowUserMenu(false);
+                          setIsMobileFarmerMode(false);
+                          setCurrentView('login');
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-xl text-[#1a1c1e] hover:bg-[#FAF8F5] flex items-center gap-2 transition-colors font-medium"
+                      >
+                        <span className="material-symbols-outlined text-sm text-[#983c0c]">passkey</span>
+                        <span>Role Login Screens (రోల్ స్క్రీన్లు)</span>
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowUserMenu(false);
+                          onOpenLoginModal();
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-xl text-[#1a1c1e] hover:bg-[#FAF8F5] flex items-center gap-2 transition-colors font-medium"
+                      >
+                        <span className="material-symbols-outlined text-sm text-emerald-700">switch_account</span>
+                        <span>Switch Role / Login Popup</span>
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowUserMenu(false);
+                          setIsMobileFarmerMode(false);
+                          setCurrentView('admin-users');
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-xl text-[#983c0c] hover:bg-[#ffdbd0]/30 flex items-center gap-2 transition-colors font-bold"
+                      >
+                        <span className="material-symbols-outlined text-sm">manage_accounts</span>
+                        <span>Manage Users &amp; Privileges</span>
+                      </button>
+                    </>
                   )}
 
                   <div className="border-t border-[#EDE7DD] my-1 pt-1">

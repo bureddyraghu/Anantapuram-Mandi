@@ -334,6 +334,7 @@ export default function App() {
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           {isMobileFarmerMode ? (
             <FarmerListingView
+              currentUserRole={currentUser.role}
               onBackToOS={() => {
                 setIsMobileFarmerMode(false);
                 setCurrentView('dashboard');
@@ -412,6 +413,7 @@ export default function App() {
             />
           ) : currentView === 'farmer-listing' ? (
             <FarmerListingView
+              currentUserRole={currentUser.role}
               onBackToOS={() => {
                 setIsMobileFarmerMode(false);
                 setCurrentView('dashboard');
@@ -457,6 +459,8 @@ export default function App() {
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
+        initialRole={currentUser.role}
+        restrictRole={currentUser.role === 'admin' ? undefined : currentUser.role}
         users={users}
         onLoginSuccess={handleLoginSuccess}
         onRequirePasswordChange={handleRequirePasswordChange}

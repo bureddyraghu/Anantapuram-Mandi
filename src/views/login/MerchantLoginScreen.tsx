@@ -53,7 +53,7 @@ export const MerchantLoginScreen: React.FC<MerchantLoginScreenProps> = ({
     }
 
     if (found.role !== 'merchant') {
-      setError(`Mobile number +91 ${cleanPhone} belongs to a ${found.role.toUpperCase()} account. Please switch to the ${found.role.toUpperCase()} login screen.`);
+      setError(`Mobile number +91 ${cleanPhone} does not have Merchant/Buyer privileges. This terminal is strictly for registered APMC traders and produce buyers.`);
       return;
     }
 
@@ -123,34 +123,6 @@ export const MerchantLoginScreen: React.FC<MerchantLoginScreenProps> = ({
         </div>
       </div>
 
-      {/* Role Switcher Links */}
-      <div className="bg-[#F0EBE1] px-6 py-2.5 border-b border-[#DDC0B6] flex items-center justify-between text-xs flex-wrap gap-2">
-        <span className="text-[#56423b] font-medium">
-          Need a different login terminal?
-        </span>
-        <div className="flex items-center gap-2">
-          {onSwitchRole && (
-            <>
-              <button
-                type="button"
-                onClick={() => onSwitchRole('farmer')}
-                className="px-3 py-1 rounded-lg bg-[#2A5C3B] text-white hover:bg-[#1E432B] transition-colors font-medium flex items-center gap-1.5 shadow-2xs"
-              >
-                <span className="material-symbols-outlined text-sm">agriculture</span>
-                <span>రైతు యాప్ (Farmer Login)</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => onSwitchRole('admin')}
-                className="px-3 py-1 rounded-lg bg-[#983c0c] text-white hover:bg-[#7e2c00] transition-colors font-medium flex items-center gap-1.5 shadow-2xs"
-              >
-                <span className="material-symbols-outlined text-sm">shield_person</span>
-                <span>Admin Command OS</span>
-              </button>
-            </>
-          )}
-        </div>
-      </div>
 
       {/* Form Content */}
       <div className="p-6 md:p-8 space-y-6">

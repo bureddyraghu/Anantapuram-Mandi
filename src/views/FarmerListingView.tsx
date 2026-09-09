@@ -3,11 +3,13 @@ import React, { useState } from 'react';
 interface FarmerListingViewProps {
   onBackToOS: () => void;
   onShowToast: (msg: string) => void;
+  currentUserRole?: string;
 }
 
 export const FarmerListingView: React.FC<FarmerListingViewProps> = ({
   onBackToOS,
   onShowToast,
+  currentUserRole,
 }) => {
   const [selectedCrop, setSelectedCrop] = useState({
     id: 'crop-1',
@@ -52,13 +54,15 @@ export const FarmerListingView: React.FC<FarmerListingViewProps> = ({
       {/* 1. Mobile App Top Bar */}
       <div className="bg-white rounded-3xl border border-[#E6DED4] p-4 shadow-sm flex items-center justify-between gap-2">
         <div className="flex items-center gap-3">
-          <button
-            onClick={onBackToOS}
-            className="w-9 h-9 rounded-xl bg-[#FAF7F2] border border-[#E6DED4] flex items-center justify-center text-[#56423b] hover:bg-[#EDE7DD] transition-colors"
-            title="Back to Mandi Command OS"
-          >
-            <span className="material-symbols-outlined text-xl">arrow_back</span>
-          </button>
+          {currentUserRole !== 'farmer' && (
+            <button
+              onClick={onBackToOS}
+              className="w-9 h-9 rounded-xl bg-[#FAF7F2] border border-[#E6DED4] flex items-center justify-center text-[#56423b] hover:bg-[#EDE7DD] transition-colors"
+              title="Back to Mandi Command OS"
+            >
+              <span className="material-symbols-outlined text-xl">arrow_back</span>
+            </button>
+          )}
           <div>
             <h2 className="font-serif font-bold text-base text-[#1a1c1e] leading-tight">
               Create Lot Listing

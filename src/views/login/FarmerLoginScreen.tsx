@@ -80,7 +80,7 @@ export const FarmerLoginScreen: React.FC<FarmerLoginScreenProps> = ({
     }
 
     if (found.role !== 'farmer') {
-      setError(`ఈ మొబైల్ నంబర్ ${found.role.toUpperCase()} ఖాతాకు చెందినది. దయచేసి సంబంధిత లాగిన్ స్క్రీన్‌ను ఎంచుకోండి.`);
+      setError(`ఈ మొబైల్ నంబర్ రైతు ఖాతా కాదు. ఈ పోర్టల్ ధృవీకరించబడిన రైతులకు మాత్రమే కేటాయించబడింది. (Farmer accounts only).`);
       return;
     }
 
@@ -168,34 +168,6 @@ export const FarmerLoginScreen: React.FC<FarmerLoginScreenProps> = ({
         </div>
       </div>
 
-      {/* Role Switcher */}
-      <div className="bg-[#EFE9DF] px-6 py-2.5 border-b border-[#DDC0B6] flex items-center justify-between text-xs flex-wrap gap-2">
-        <span className="text-[#56423b] font-medium">
-          వేరే పోర్టల్ కావాలా? (Other Mandi Portals):
-        </span>
-        <div className="flex items-center gap-2">
-          {onSwitchRole && (
-            <>
-              <button
-                type="button"
-                onClick={() => onSwitchRole('merchant')}
-                className="px-3 py-1 rounded-lg bg-[#1A3026] text-white hover:bg-[#14261e] transition-colors font-medium flex items-center gap-1 shadow-2xs"
-              >
-                <span className="material-symbols-outlined text-sm">storefront</span>
-                <span>Merchant / Trader</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => onSwitchRole('admin')}
-                className="px-3 py-1 rounded-lg bg-[#983c0c] text-white hover:bg-[#7e2c00] transition-colors font-medium flex items-center gap-1 shadow-2xs"
-              >
-                <span className="material-symbols-outlined text-sm">shield_person</span>
-                <span>Admin Command OS</span>
-              </button>
-            </>
-          )}
-        </div>
-      </div>
 
       {/* Form Content */}
       <div className="p-6 md:p-8 space-y-6">

@@ -9,6 +9,7 @@ interface LoginModalProps {
   onLoginSuccess: (user: UserAccount) => void;
   onRequirePasswordChange: (user: UserAccount) => void;
   initialRole?: UserRole;
+  restrictRole?: UserRole;
 }
 
 export const LoginModal: React.FC<LoginModalProps> = ({
@@ -17,7 +18,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   users,
   onLoginSuccess,
   onRequirePasswordChange,
-  initialRole = 'merchant'
+  initialRole = 'merchant',
+  restrictRole,
 }) => {
   if (!isOpen) return null;
 
@@ -41,6 +43,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
         <RoleBasedLoginHub
           initialRole={initialRole}
+          restrictRole={restrictRole}
           users={users}
           onLoginSuccess={onLoginSuccess}
           onRequirePasswordChange={onRequirePasswordChange}

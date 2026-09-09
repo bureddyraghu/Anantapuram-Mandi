@@ -46,6 +46,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
 
       <RoleBasedLoginHub
         initialRole={initialRole}
+        restrictRole={currentUserRole === 'admin' ? undefined : (currentUserRole || initialRole)}
         users={users}
         onLoginSuccess={onLoginSuccess}
         onRequirePasswordChange={onRequirePasswordChange}
