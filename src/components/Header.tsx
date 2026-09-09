@@ -49,7 +49,11 @@ export const Header: React.FC<HeaderProps> = ({
   const handleNavigate = (target: 'os' | 'merchant' | 'farmer' | 'admin') => {
     if (target === 'os') {
       if (currentUser.role === 'farmer') {
-        onShowToast('⚠️ Restricted: Your account is logged in as Farmer (రైతు). Please switch to Admin or Merchant role to access Command OS.');
+        onShowToast('⚠️ Restricted: Your account is logged in as Farmer (రైతు). Please switch to Admin role to access Command OS.');
+        return;
+      }
+      if (currentUser.role === 'merchant') {
+        onShowToast('⚠️ Access Restricted: Merchant/Buyer accounts do not have access to Dashboard or Corridor Command Center.');
         return;
       }
       setIsMobileFarmerMode(false);
@@ -84,61 +88,105 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-30 bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#E6DED4] px-4 md:px-6 py-2.5 transition-colors">
       <div className="flex items-center justify-between gap-3 md:gap-6">
         
-        {/* Left: Mobile menu toggle / Zone Switcher */}
+        {/* Left: Brand Identity or View Mode Switcher */}
         <div className="flex items-center gap-3">
-          {/* View Mode Toggle Pill: Desktop Mandi OS vs Merchant Portal vs Farmer App */}
-          <div className="flex items-center bg-[#EDE7DD] p-1 rounded-full border border-[#DDC0B6]/50">
-            <button
-              onClick={() => handleNavigate('os')}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                !isMobileFarmerMode && currentView !== 'merchant-portal' && currentView !== 'farmers-and-fpos' && currentView !== 'mandi-merchants' && currentView !== 'admin-users'
-                  ? 'bg-[#983c0c] text-white shadow-sm' 
-                  : 'text-[#56423b] hover:text-[#1a1c1e]'
-              }`}
-            >
-              <span className="material-symbols-outlined text-sm">desktop_windows</span>
-              <span className="hidden sm:inline">Mandi Command OS</span>
-              <span className="sm:hidden">OS</span>
-            </button>
+          {currentView === 'merchant-portal' ? (
+            /* Dedicated Merchant / Buyer App Header (No access to Dashboard) */
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-[#1A3026] text-white flex items-center justify-center shadow-xs border border-emerald-700/50">
+                <span className="material-symbols-outlined text-xl text-emerald-400">storefront</span>
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="font-serif font-bold text-sm sm:text-base text-[#1a1c1e] leading-tight">
+                    Merchant / Buyer Terminal
+                  </h1>
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#c9ead9] text-[#022016] border border-[#adcebe]">
+                    APMC e-Procurement
+                  </span>
+                </div>
+                <div className="text-[11px] text-[#6F6B64] hidden sm:block">
+                  వ్యాపారి కొనుగోలు వేదిక • T+0 Escrow • B2B Direct Trading
+                </div>
+              </div>
 
-            <button
-              onClick={() => handleNavigate('merchant')}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                !isMobileFarmerMode && currentView === 'merchant-portal'
-                  ? 'bg-[#1A3026] text-white shadow-sm' 
-                  : 'text-[#56423b] hover:text-[#1a1c1e]'
-              }`}
-            >
-              <span className="material-symbols-outlined text-sm">storefront</span>
-              <span className="font-semibold hidden sm:inline">Merchant / Buyer App</span>
-              <span className="font-semibold sm:hidden">Buyer</span>
-            </button>
+              {/* Admin-only escape hatch to return to Mandi Command OS */}
+              {currentUser.role === 'admin' && (
+                <button
+                  onClick={() => {
+                    setIsMobileFarmerMode(false);
+                    setCurrentView('dashboard');
+                  }}
+                  className="ml-2 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#E6DED4] text-xs font-semibold text-[#983c0c] hover:bg-[#FAF7F2] transition-colors shadow-2xs"
+                  title="Admin session: Return to Mandi Command OS"
+                >
+                  <span className="material-symbols-outlined text-sm">arrow_back</span>
+                  <span className="hidden md:inline">Exit to Mandi OS</span>
+                  <span className="md:hidden">Exit</span>
+                </button>
+              )}
+            </div>
+          ) : (
+            /* View Mode Toggle Pill for Admin / OS Modes */
+            <div className="flex items-center bg-[#EDE7DD] p-1 rounded-full border border-[#DDC0B6]/50">
+              {currentUser.role !== 'merchant' && (
+                <button
+                  onClick={() => handleNavigate('os')}
+                  className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                    !isMobileFarmerMode && currentView !== 'merchant-portal' && currentView !== 'farmers-and-fpos' && currentView !== 'mandi-merchants' && currentView !== 'admin-users'
+                      ? 'bg-[#983c0c] text-white shadow-sm' 
+                      : 'text-[#56423b] hover:text-[#1a1c1e]'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-sm">desktop_windows</span>
+                  <span className="hidden sm:inline">Mandi Command OS</span>
+                  <span className="sm:hidden">OS</span>
+                </button>
+              )}
 
-            <button
-              onClick={() => handleNavigate('farmer')}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                isMobileFarmerMode 
-                  ? 'bg-[#476558] text-white shadow-sm' 
-                  : 'text-[#56423b] hover:text-[#1a1c1e]'
-              }`}
-            >
-              <span className="material-symbols-outlined text-sm">smartphone</span>
-              <span className="font-semibold">రైతు యాప్ (Farmer)</span>
-            </button>
+              <button
+                onClick={() => handleNavigate('merchant')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                  !isMobileFarmerMode && currentView === 'merchant-portal'
+                    ? 'bg-[#1A3026] text-white shadow-sm' 
+                    : 'text-[#56423b] hover:text-[#1a1c1e]'
+                }`}
+              >
+                <span className="material-symbols-outlined text-sm">storefront</span>
+                <span className="font-semibold hidden sm:inline">Merchant / Buyer App</span>
+                <span className="font-semibold sm:hidden">Buyer</span>
+              </button>
 
-            <button
-              onClick={() => handleNavigate('admin')}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                !isMobileFarmerMode && (currentView === 'farmers-and-fpos' || currentView === 'mandi-merchants' || currentView === 'admin-users')
-                  ? 'bg-[#7e2c00] text-white shadow-sm' 
-                  : 'text-[#56423b] hover:text-[#1a1c1e]'
-              }`}
-            >
-              <span className="material-symbols-outlined text-sm">admin_panel_settings</span>
-              <span className="font-semibold hidden xl:inline">Admin (Corridor &amp; Users)</span>
-              <span className="font-semibold xl:hidden">Admin</span>
-            </button>
-          </div>
+              {currentUser.role !== 'merchant' && (
+                <button
+                  onClick={() => handleNavigate('farmer')}
+                  className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                    isMobileFarmerMode 
+                      ? 'bg-[#476558] text-white shadow-sm' 
+                      : 'text-[#56423b] hover:text-[#1a1c1e]'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-sm">smartphone</span>
+                  <span className="font-semibold">రైతు యాప్ (Farmer)</span>
+                </button>
+              )}
+
+              {currentUser.role === 'admin' && (
+                <button
+                  onClick={() => handleNavigate('admin')}
+                  className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                    !isMobileFarmerMode && (currentView === 'farmers-and-fpos' || currentView === 'mandi-merchants' || currentView === 'admin-users')
+                      ? 'bg-[#7e2c00] text-white shadow-sm' 
+                      : 'text-[#56423b] hover:text-[#1a1c1e]'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-sm">admin_panel_settings</span>
+                  <span className="font-semibold hidden xl:inline">Admin (Corridor &amp; Users)</span>
+                  <span className="font-semibold xl:hidden">Admin</span>
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Regional Zone Selector */}
           <div className="relative hidden lg:block">
@@ -227,15 +275,17 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="font-semibold">AP-KA SYNC: 128 Mandis Live</span>
           </div>
 
-          {/* Quick Equilibrium Simulator Button */}
-          <button
-            onClick={onOpenEquilibriumModal}
-            title="Open Price Equilibrium Simulator"
-            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF7F2] hover:bg-[#F3EDE2] border border-[#E6DED4] text-xs font-semibold text-[#7e2c00] transition-colors"
-          >
-            <span className="material-symbols-outlined text-sm">tune</span>
-            <span>Equilibrium Sim</span>
-          </button>
+          {/* Quick Equilibrium Simulator Button (Hidden in Merchant Portal or for Merchants) */}
+          {currentView !== 'merchant-portal' && currentUser.role !== 'merchant' && (
+            <button
+              onClick={onOpenEquilibriumModal}
+              title="Open Price Equilibrium Simulator"
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF7F2] hover:bg-[#F3EDE2] border border-[#E6DED4] text-xs font-semibold text-[#7e2c00] transition-colors"
+            >
+              <span className="material-symbols-outlined text-sm">tune</span>
+              <span>Equilibrium Sim</span>
+            </button>
+          )}
 
           {/* Notifications Dropdown */}
           <div className="relative">

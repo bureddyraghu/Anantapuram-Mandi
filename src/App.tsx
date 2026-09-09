@@ -96,6 +96,34 @@ export default function App() {
     setMerchants((prev) => prev.filter((m) => m.id !== id));
   };
 
+  // Guard navigation based on role constraints
+  const handleNavigateView = (view: AppView) => {
+    if (currentUser.role === 'merchant') {
+      if (view !== 'merchant-portal' && view !== 'login') {
+        showToast('⚠️ Access Restricted: Merchant/Buyer accounts do not have access to Dashboard or Corridor Command Center.');
+        setCurrentView('merchant-portal');
+        return;
+      }
+    }
+    if (currentUser.role === 'farmer') {
+      if (view !== 'farmer-listing' && view !== 'login') {
+        showToast('⚠️ Access Restricted: Farmer accounts are restricted to రైతు యాప్.');
+        setCurrentView('farmer-listing');
+        setIsMobileFarmerMode(true);
+        return;
+      }
+    }
+    setCurrentView(view);
+  };
+
+  // Enforce role isolation: Merchants cannot access Dashboard or Command OS
+  React.useEffect(() => {
+    if (currentUser.role === 'merchant' && currentView !== 'merchant-portal' && currentView !== 'login') {
+      showToast('⚠️ Access Restricted: Merchant accounts do not have access to Dashboard or Corridor Command Center.');
+      setCurrentView('merchant-portal');
+    }
+  }, [currentUser.role, currentView]);
+
   // Users CRUD handlers
   const handleAddUser = (newUser: UserAccount) => {
     setUsers((prev) => [newUser, ...prev]);
@@ -271,7 +299,7 @@ export default function App() {
       {/* Top Header */}
       <Header
         currentView={currentView}
-        setCurrentView={setCurrentView}
+        setCurrentView={handleNavigateView}
         selectedZone={selectedZone}
         setSelectedZone={setSelectedZone}
         isMobileFarmerMode={isMobileFarmerMode}
@@ -287,12 +315,12 @@ export default function App() {
 
       {/* Main Container */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar (shown on desktop OS mode) */}
-        {!isMobileFarmerMode && (
+        {/* Corridor Command Center Sidebar (Strictly hidden in Farmer Mode, Merchant/Buyer App, and Login View) */}
+        {!isMobileFarmerMode && currentView !== 'merchant-portal' && currentUser.role !== 'merchant' && currentView !== 'login' && (
           <div className="hidden md:block">
             <Sidebar
               currentView={currentView}
-              setCurrentView={setCurrentView}
+              setCurrentView={handleNavigateView}
               isMobileFarmerMode={isMobileFarmerMode}
               setIsMobileFarmerMode={setIsMobileFarmerMode}
               currentUser={currentUser}
@@ -338,14 +366,19 @@ export default function App() {
             />
           ) : currentView === 'merchant-portal' ? (
             <MerchantPortalView
+              currentUser={currentUser}
               onOpenCreateRFQ={() => setIsCreateRFQModalOpen(true)}
               onOpenContractSign={() => setIsSignModalOpen(true)}
               onOpenConsignmentModal={(item) => setActiveTrackingConsignment(item)}
               onShowToast={showToast}
-              onSwitchToFarmer={() => {
-                setIsMobileFarmerMode(true);
-                setCurrentView('farmer-listing');
-              }}
+              onSwitchToFarmer={
+                currentUser.role === 'admin'
+                  ? () => {
+                      setIsMobileFarmerMode(true);
+                      setCurrentView('farmer-listing');
+                    }
+                  : undefined
+              }
             />
           ) : currentView === 'farmers-and-fpos' ? (
             <AdminFarmersView
@@ -391,6 +424,7 @@ export default function App() {
               onLoginSuccess={handleLoginSuccess}
               onRequirePasswordChange={handleRequirePasswordChange}
               initialRole={currentUser.role}
+              currentUserRole={currentUser.role}
               onBackToDashboard={() => {
                 if (currentUser.role === 'farmer') {
                   setIsMobileFarmerMode(true);

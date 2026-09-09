@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { BuyerRFQ, ConsignmentItem } from '../types';
+import { BuyerRFQ, ConsignmentItem, UserAccount } from '../types';
 import { CONSIGNMENT_ITEMS } from '../data/mockData';
 
 interface MerchantPortalViewProps {
+  currentUser?: UserAccount;
   onOpenCreateRFQ: () => void;
   onOpenContractSign: () => void;
   onOpenConsignmentModal: (item: ConsignmentItem) => void;
   onShowToast: (msg: string) => void;
-  onSwitchToFarmer: () => void;
+  onSwitchToFarmer?: () => void;
 }
 
 interface FarmerLotMarketItem {
@@ -32,6 +33,7 @@ interface FarmerLotMarketItem {
 }
 
 export const MerchantPortalView: React.FC<MerchantPortalViewProps> = ({
+  currentUser,
   onOpenCreateRFQ,
   onOpenContractSign,
   onOpenConsignmentModal,
@@ -44,6 +46,9 @@ export const MerchantPortalView: React.FC<MerchantPortalViewProps> = ({
   const [biddingLot, setBiddingLot] = useState<FarmerLotMarketItem | null>(null);
   const [bidPrice, setBidPrice] = useState<number>(60);
   const [inspectingAssayLot, setInspectingAssayLot] = useState<FarmerLotMarketItem | null>(null);
+
+  const displayName = currentUser?.fpoOrFirm || (currentUser?.role === 'merchant' ? currentUser.name : 'Sri Balaji Agro Fruit & Produce Exporters');
+  const userInitials = (displayName || 'SB').split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
 
   // Initial RFQ data
   const [rfqList, setRfqList] = useState<BuyerRFQ[]>([
@@ -220,26 +225,32 @@ export const MerchantPortalView: React.FC<MerchantPortalViewProps> = ({
   };
 
   return (
-    <div className="space-y-6 pb-16">
+    <div className="max-w-7xl mx-auto space-y-6 pb-16">
       {/* 1. Merchant Profile & Escrow Credit Header */}
       <div className="bg-white rounded-3xl border border-[#E6DED4] p-5 sm:p-6 shadow-2xs">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-[#1A3026] text-white flex items-center justify-center font-serif font-bold text-2xl shrink-0 shadow-md">
-              SB
+            <div className="w-14 h-14 rounded-2xl bg-[#1A3026] text-white flex items-center justify-center font-serif font-bold text-2xl shrink-0 shadow-md border border-emerald-800/40">
+              {userInitials}
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="font-serif font-bold text-xl sm:text-2xl text-[#1a1c1e]">
-                  Sri Balaji Agro Fruit &amp; Produce Exporters
+                  {displayName}
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#c9ead9] text-[#022016] border border-[#adcebe] flex items-center gap-1">
                   <span className="material-symbols-outlined text-xs text-emerald-800">verified</span>
-                  <span>APMC Grade A+ License</span>
+                  <span>APMC Grade A+ Trader License</span>
                 </span>
+                {currentUser?.role === 'admin' && (
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#FAF0EB] text-[#983c0c] border border-[#ffb77d] flex items-center gap-1">
+                    <span className="material-symbols-outlined text-xs">admin_panel_settings</span>
+                    <span>Admin Preview Mode</span>
+                  </span>
+                )}
               </div>
               <p className="text-xs text-[#6F6B64] mt-1">
-                APMC License: <strong className="text-[#1a1c1e]">KA-BLR-8921</strong> • GSTIN: <strong className="text-[#1a1c1e]">36AAACB1234F1Z0</strong> • Bangalore &amp; Rayalaseema Trade Desk
+                APMC License: <strong className="text-[#1a1c1e]">APMC/BLR-TR-8921</strong> • Mobile ID: <strong className="text-[#1a1c1e]">{currentUser?.phoneNumber ? `+91 ${currentUser.phoneNumber}` : '+91 98450 11982'}</strong> • Bangalore &amp; Rayalaseema Direct Trade Desk
               </p>
             </div>
           </div>
@@ -286,14 +297,16 @@ export const MerchantPortalView: React.FC<MerchantPortalViewProps> = ({
               <span>+ Post Buy Requirement</span>
             </button>
 
-            <button
-              onClick={onSwitchToFarmer}
-              className="px-3.5 py-2 rounded-xl bg-white border border-[#E6DED4] text-xs font-semibold text-[#56423b] hover:bg-[#FAF7F2] transition-colors flex items-center gap-1.5"
-              title="Test the Farmer Listing screen"
-            >
-              <span className="material-symbols-outlined text-sm text-[#983c0c]">agriculture</span>
-              <span>రైతు వ్యూ (Farmer App)</span>
-            </button>
+            {currentUser?.role === 'admin' && onSwitchToFarmer && (
+              <button
+                onClick={onSwitchToFarmer}
+                className="px-3.5 py-2 rounded-xl bg-white border border-[#E6DED4] text-xs font-semibold text-[#56423b] hover:bg-[#FAF7F2] transition-colors flex items-center gap-1.5"
+                title="Test the Farmer Listing screen (Admin only)"
+              >
+                <span className="material-symbols-outlined text-sm text-[#983c0c]">agriculture</span>
+                <span>రైతు వ్యూ (Farmer App)</span>
+              </button>
+            )}
           </div>
         </div>
 
