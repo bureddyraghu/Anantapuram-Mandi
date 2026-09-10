@@ -109,22 +109,6 @@ export const Header: React.FC<HeaderProps> = ({
                   రైతు సేవలు • 0% కమీషన్ • డిజిటల్ తూకం • T+0 నేరుగా బ్యాంక్ ఖాతాకు
                 </div>
               </div>
-
-              {/* Admin-only escape hatch to return to Mandi Command OS */}
-              {currentUser.role === 'admin' && (
-                <button
-                  onClick={() => {
-                    setIsMobileFarmerMode(false);
-                    setCurrentView('dashboard');
-                  }}
-                  className="ml-2 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#E6DED4] text-xs font-semibold text-[#983c0c] hover:bg-[#FAF7F2] transition-colors shadow-2xs"
-                  title="Admin session: Return to Mandi Command OS"
-                >
-                  <span className="material-symbols-outlined text-sm">arrow_back</span>
-                  <span className="hidden md:inline">Exit to Mandi OS</span>
-                  <span className="md:hidden">Exit</span>
-                </button>
-              )}
             </div>
           ) : currentView === 'merchant-portal' || currentUser.role === 'merchant' ? (
             /* Dedicated Merchant / Buyer App Header (Strictly isolated to Merchant Portal) */
@@ -145,22 +129,6 @@ export const Header: React.FC<HeaderProps> = ({
                   వ్యాపారి కొనుగోలు వేదిక • T+0 Escrow • B2B Direct Trading
                 </div>
               </div>
-
-              {/* Admin-only escape hatch to return to Mandi Command OS */}
-              {currentUser.role === 'admin' && (
-                <button
-                  onClick={() => {
-                    setIsMobileFarmerMode(false);
-                    setCurrentView('dashboard');
-                  }}
-                  className="ml-2 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#E6DED4] text-xs font-semibold text-[#983c0c] hover:bg-[#FAF7F2] transition-colors shadow-2xs"
-                  title="Admin session: Return to Mandi Command OS"
-                >
-                  <span className="material-symbols-outlined text-sm">arrow_back</span>
-                  <span className="hidden md:inline">Exit to Mandi OS</span>
-                  <span className="md:hidden">Exit</span>
-                </button>
-              )}
             </div>
           ) : (
             /* View Mode Toggle Pill for Admin / Command OS Modes ONLY */

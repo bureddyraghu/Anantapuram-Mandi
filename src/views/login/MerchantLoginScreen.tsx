@@ -5,14 +5,12 @@ interface MerchantLoginScreenProps {
   users: UserAccount[];
   onLoginSuccess: (user: UserAccount) => void;
   onRequirePasswordChange: (user: UserAccount) => void;
-  onSwitchRole?: (role: 'admin' | 'farmer') => void;
 }
 
 export const MerchantLoginScreen: React.FC<MerchantLoginScreenProps> = ({
   users,
   onLoginSuccess,
   onRequirePasswordChange,
-  onSwitchRole,
 }) => {
   const [phoneNumber, setPhoneNumber] = useState('9845011982');
   const [password, setPassword] = useState('Mandi@123');

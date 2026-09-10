@@ -5,14 +5,12 @@ interface AdminLoginScreenProps {
   users: UserAccount[];
   onLoginSuccess: (user: UserAccount) => void;
   onRequirePasswordChange: (user: UserAccount) => void;
-  onSwitchRole?: (role: 'merchant' | 'farmer') => void;
 }
 
 export const AdminLoginScreen: React.FC<AdminLoginScreenProps> = ({
   users,
   onLoginSuccess,
   onRequirePasswordChange,
-  onSwitchRole,
 }) => {
   const [phoneNumber, setPhoneNumber] = useState('9848011111');
   const [password, setPassword] = useState('Admin@123');
@@ -108,35 +106,6 @@ export const AdminLoginScreen: React.FC<AdminLoginScreenProps> = ({
               Govt DSC Gateway: ACTIVE
             </span>
           </div>
-        </div>
-      </div>
-
-      {/* Role Switcher Links */}
-      <div className="bg-black/40 px-6 py-2.5 border-b border-white/10 flex items-center justify-between text-xs flex-wrap gap-2">
-        <span className="text-stone-400">
-          Not an Administrator? Select your portal:
-        </span>
-        <div className="flex items-center gap-2">
-          {onSwitchRole && (
-            <>
-              <button
-                type="button"
-                onClick={() => onSwitchRole('merchant')}
-                className="px-3 py-1 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-800/60 hover:bg-emerald-900 transition-colors font-medium flex items-center gap-1.5"
-              >
-                <span className="material-symbols-outlined text-sm">storefront</span>
-                <span>Merchant / Trader Login</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => onSwitchRole('farmer')}
-                className="px-3 py-1 rounded-lg bg-amber-950 text-amber-300 border border-amber-800/60 hover:bg-amber-900 transition-colors font-medium flex items-center gap-1.5"
-              >
-                <span className="material-symbols-outlined text-sm">agriculture</span>
-                <span>రైతు యాప్ (Farmer Login)</span>
-              </button>
-            </>
-          )}
         </div>
       </div>
 
@@ -303,7 +272,7 @@ export const AdminLoginScreen: React.FC<AdminLoginScreenProps> = ({
             className="w-full py-3.5 bg-linear-to-r from-[#983c0c] to-[#b8480f] hover:from-[#7e2c00] hover:to-[#983c0c] text-white font-bold text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
-            <span>Authenticate to APMC Mandi Command OS</span>
+            <span>Authenticate Administrator Portal</span>
           </button>
         </form>
 

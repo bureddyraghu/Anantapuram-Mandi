@@ -5,14 +5,12 @@ interface FarmerLoginScreenProps {
   users: UserAccount[];
   onLoginSuccess: (user: UserAccount) => void;
   onRequirePasswordChange: (user: UserAccount) => void;
-  onSwitchRole?: (role: 'admin' | 'merchant') => void;
 }
 
 export const FarmerLoginScreen: React.FC<FarmerLoginScreenProps> = ({
   users,
   onLoginSuccess,
   onRequirePasswordChange,
-  onSwitchRole,
 }) => {
   const [authMode, setAuthMode] = useState<'password' | 'otp'>('password');
   const [phoneNumber, setPhoneNumber] = useState('9440123891');
