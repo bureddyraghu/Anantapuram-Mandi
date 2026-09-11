@@ -19,6 +19,8 @@ import { CreateRFQModal } from './components/modals/CreateRFQModal';
 import { LoginModal } from './components/modals/LoginModal';
 import { UpdatePasswordModal } from './components/modals/UpdatePasswordModal';
 import { LoginView } from './views/LoginView';
+import { FarmerLoginView } from './views/FarmerLoginView';
+import { MerchantLoginView } from './views/MerchantLoginView';
 import { CONSIGNMENT_ITEMS, INITIAL_FARMER_RECORDS, INITIAL_MERCHANT_RECORDS } from './data/mockData';
 import { INITIAL_USER_ACCOUNTS } from './data/mockUsers';
 import { FarmerRecord, MerchantRecord } from './types';
@@ -31,6 +33,12 @@ export default function App() {
     const hash = window.location.hash.toLowerCase();
     const appParam = params.get('app') || params.get('mode') || params.get('view');
 
+    if (appParam === 'farmer-login' || hash.includes('farmer-login')) {
+      return { view: 'farmer-login' as AppView, isFarmer: true };
+    }
+    if (appParam === 'merchant-login' || hash.includes('merchant-login')) {
+      return { view: 'merchant-login' as AppView, isFarmer: false };
+    }
     if (appParam === 'farmer' || hash.includes('farmer')) {
       return { view: 'farmer-listing' as AppView, isFarmer: true };
     }
@@ -99,14 +107,14 @@ export default function App() {
   // Guard navigation based on role constraints
   const handleNavigateView = (view: AppView) => {
     if (currentUser.role === 'merchant') {
-      if (view !== 'merchant-portal' && view !== 'login') {
+      if (view !== 'merchant-portal' && view !== 'merchant-login' && view !== 'login') {
         showToast('⚠️ Access Restricted: Merchant/Buyer accounts do not have access to Dashboard or Corridor Command Center.');
         setCurrentView('merchant-portal');
         return;
       }
     }
     if (currentUser.role === 'farmer') {
-      if (view !== 'farmer-listing' && view !== 'login') {
+      if (view !== 'farmer-listing' && view !== 'farmer-login' && view !== 'login') {
         showToast('⚠️ Access Restricted: Farmer accounts are restricted to రైతు యాప్.');
         setCurrentView('farmer-listing');
         setIsMobileFarmerMode(true);
@@ -118,7 +126,7 @@ export default function App() {
 
   // Enforce role isolation: Merchants cannot access Dashboard or Command OS
   React.useEffect(() => {
-    if (currentUser.role === 'merchant' && currentView !== 'merchant-portal' && currentView !== 'login') {
+    if (currentUser.role === 'merchant' && currentView !== 'merchant-portal' && currentView !== 'merchant-login' && currentView !== 'login') {
       showToast('⚠️ Access Restricted: Merchant accounts do not have access to Dashboard or Corridor Command Center.');
       setCurrentView('merchant-portal');
     }
@@ -185,9 +193,19 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    setCurrentView('login');
-    setIsMobileFarmerMode(false);
-    showToast('Signed out of Mandi Corridor. Select your role to access your dedicated login screen.');
+    if (currentUser.role === 'farmer' || isMobileFarmerMode || currentView === 'farmer-listing' || currentView === 'farmer-login') {
+      setCurrentView('farmer-login');
+      setIsMobileFarmerMode(true);
+      showToast('Signed out of రైతు యాప్. Enter your mobile number to sign in.');
+    } else if (currentUser.role === 'merchant' || currentView === 'merchant-portal' || currentView === 'merchant-login') {
+      setCurrentView('merchant-login');
+      setIsMobileFarmerMode(false);
+      showToast('Signed out of Merchant Terminal. Authenticate with your trader credentials.');
+    } else {
+      setCurrentView('login');
+      setIsMobileFarmerMode(false);
+      showToast('Signed out of Mandi Corridor. Select your authentication portal.');
+    }
   };
 
   // Sync URL query params and hash when view or mode changes
@@ -195,7 +213,13 @@ export default function App() {
     if (typeof window === 'undefined') return;
     const url = new URL(window.location.href);
 
-    if (isMobileFarmerMode || currentView === 'farmer-listing') {
+    if (currentView === 'farmer-login') {
+      url.searchParams.set('app', 'farmer-login');
+      url.hash = '#farmer-login';
+    } else if (currentView === 'merchant-login') {
+      url.searchParams.set('app', 'merchant-login');
+      url.hash = '#merchant-login';
+    } else if (isMobileFarmerMode || currentView === 'farmer-listing') {
       url.searchParams.set('app', 'farmer');
       url.hash = '#farmer';
     } else if (currentView === 'merchant-portal') {
@@ -315,8 +339,13 @@ export default function App() {
 
       {/* Main Container */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Corridor Command Center Sidebar (Strictly hidden in Farmer Mode, Merchant/Buyer App, and Login View) */}
-        {!isMobileFarmerMode && currentView !== 'merchant-portal' && currentUser.role !== 'merchant' && currentView !== 'login' && (
+        {/* Corridor Command Center Sidebar (Strictly hidden in Farmer Mode, Merchant/Buyer App, and Login Views) */}
+        {!isMobileFarmerMode &&
+          currentView !== 'merchant-portal' &&
+          currentUser.role !== 'merchant' &&
+          currentView !== 'login' &&
+          currentView !== 'farmer-login' &&
+          currentView !== 'merchant-login' && (
           <div className="hidden md:block">
             <Sidebar
               currentView={currentView}
@@ -332,7 +361,27 @@ export default function App() {
 
         {/* Content Area */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-          {isMobileFarmerMode ? (
+          {currentView === 'farmer-login' ? (
+            <FarmerLoginView
+              users={users}
+              onLoginSuccess={handleLoginSuccess}
+              onRequirePasswordChange={handleRequirePasswordChange}
+              onBackToApp={() => {
+                setIsMobileFarmerMode(true);
+                setCurrentView('farmer-listing');
+              }}
+            />
+          ) : currentView === 'merchant-login' ? (
+            <MerchantLoginView
+              users={users}
+              onLoginSuccess={handleLoginSuccess}
+              onRequirePasswordChange={handleRequirePasswordChange}
+              onBackToApp={() => {
+                setIsMobileFarmerMode(false);
+                setCurrentView('merchant-portal');
+              }}
+            />
+          ) : isMobileFarmerMode ? (
             <FarmerListingView
               currentUserRole={currentUser.role}
               onBackToOS={() => {

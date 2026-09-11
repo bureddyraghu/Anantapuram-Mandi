@@ -90,7 +90,7 @@ export const Header: React.FC<HeaderProps> = ({
         
         {/* Left: Brand Identity or View Mode Switcher */}
         <div className="flex items-center gap-3">
-          {currentView === 'farmer-listing' || isMobileFarmerMode || currentUser.role === 'farmer' ? (
+          {currentView === 'farmer-listing' || currentView === 'farmer-login' || isMobileFarmerMode || currentUser.role === 'farmer' ? (
             /* Dedicated Farmer App Header (Strictly isolated to Farmer Portal) */
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-[#2A5C3B] text-white flex items-center justify-center shadow-xs border border-emerald-700/50">
@@ -99,7 +99,7 @@ export const Header: React.FC<HeaderProps> = ({
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="font-serif font-bold text-sm sm:text-base text-[#1a1c1e] leading-tight">
-                    రైతు యాప్ • Farmer Portal
+                    {currentView === 'farmer-login' ? 'రైతు లాగిన్ • Farmer Login' : 'రైతు యాప్ • Farmer Portal'}
                   </h1>
                   <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#c9ead9] text-[#022016] border border-[#adcebe]">
                     APMC Direct Kisan
@@ -110,7 +110,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               </div>
             </div>
-          ) : currentView === 'merchant-portal' || currentUser.role === 'merchant' ? (
+          ) : currentView === 'merchant-portal' || currentView === 'merchant-login' || currentUser.role === 'merchant' ? (
             /* Dedicated Merchant / Buyer App Header (Strictly isolated to Merchant Portal) */
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-[#1A3026] text-white flex items-center justify-center shadow-xs border border-emerald-700/50">
@@ -119,7 +119,7 @@ export const Header: React.FC<HeaderProps> = ({
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="font-serif font-bold text-sm sm:text-base text-[#1a1c1e] leading-tight">
-                    Merchant / Buyer Terminal
+                    {currentView === 'merchant-login' ? 'Merchant & Buyer Login' : 'Merchant / Buyer Terminal'}
                   </h1>
                   <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#c9ead9] text-[#022016] border border-[#adcebe]">
                     APMC e-Procurement
@@ -424,13 +424,39 @@ export const Header: React.FC<HeaderProps> = ({
                         onClick={(e) => {
                           e.stopPropagation();
                           setShowUserMenu(false);
+                          setIsMobileFarmerMode(true);
+                          setCurrentView('farmer-login');
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-xl text-[#2A5C3B] hover:bg-emerald-50 flex items-center gap-2 transition-colors font-medium"
+                      >
+                        <span className="material-symbols-outlined text-sm text-[#2A5C3B]">agriculture</span>
+                        <span>రైతు లాగిన్ (Farmer Login Page)</span>
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowUserMenu(false);
+                          setIsMobileFarmerMode(false);
+                          setCurrentView('merchant-login');
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-xl text-[#1A3026] hover:bg-emerald-50 flex items-center gap-2 transition-colors font-medium"
+                      >
+                        <span className="material-symbols-outlined text-sm text-[#1A3026]">storefront</span>
+                        <span>వ్యాపారి లాగిన్ (Merchant Login Page)</span>
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowUserMenu(false);
                           setIsMobileFarmerMode(false);
                           setCurrentView('login');
                         }}
                         className="w-full text-left px-3 py-2 rounded-xl text-[#1a1c1e] hover:bg-[#FAF8F5] flex items-center gap-2 transition-colors font-medium"
                       >
                         <span className="material-symbols-outlined text-sm text-[#983c0c]">passkey</span>
-                        <span>Role Login Screens (రోల్ స్క్రీన్లు)</span>
+                        <span>Admin Login Portal</span>
                       </button>
 
                       <button
@@ -458,6 +484,36 @@ export const Header: React.FC<HeaderProps> = ({
                         <span>Manage Users &amp; Privileges</span>
                       </button>
                     </>
+                  )}
+
+                  {currentUser.role === 'farmer' && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowUserMenu(false);
+                        setIsMobileFarmerMode(true);
+                        setCurrentView('farmer-login');
+                      }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-[#2A5C3B] hover:bg-emerald-50 flex items-center gap-2 transition-colors font-medium"
+                    >
+                      <span className="material-symbols-outlined text-sm">agriculture</span>
+                      <span>రైతు లాగిన్ పేజీ (Farmer Login Page)</span>
+                    </button>
+                  )}
+
+                  {currentUser.role === 'merchant' && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowUserMenu(false);
+                        setIsMobileFarmerMode(false);
+                        setCurrentView('merchant-login');
+                      }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-[#1A3026] hover:bg-emerald-50 flex items-center gap-2 transition-colors font-medium"
+                    >
+                      <span className="material-symbols-outlined text-sm">storefront</span>
+                      <span>Merchant Login Page (వ్యాపారి లాగిన్)</span>
+                    </button>
                   )}
 
                   <div className="border-t border-[#EDE7DD] my-1 pt-1">

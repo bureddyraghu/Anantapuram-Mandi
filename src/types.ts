@@ -13,7 +13,9 @@ export type AppView =
   | 'supply-demand-and-pricing'
   | 'ai-opportunity-engine'
   | 'audit-and-settings'
-  | 'login';
+  | 'login'
+  | 'farmer-login'
+  | 'merchant-login';
 
 export interface BuyerRFQ {
   id: string;
